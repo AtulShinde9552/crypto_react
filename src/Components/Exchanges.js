@@ -35,7 +35,7 @@ const Exchanges = () => {
   return (
    <Container maxW={'container.lg'}>
     {loading? <Loader/> : <>
-    <HStack wrap={'wrap'}>
+    <HStack wrap={'wrap'} justifyContent={'space-evenly'}>
       {Exchanges.map((i)=>(
         <ExchangeCard name={i.name} image={i.image} url={i.url} rank={i.trust_score_rank} key={i.id}/>
         ))}

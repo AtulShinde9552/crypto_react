@@ -1,7 +1,7 @@
 import {useEffect, useState} from 'react'
 import axios from 'axios'
 import { server } from '..'
-import { Button, Container, HStack,} from '@chakra-ui/react'
+import { Button, Container, HStack, Radio, RadioGroup,} from '@chakra-ui/react'
 import ExchangeError from './ExchangeError'
 import CoinsCard from '../CoinsCard'
 import Loader from './Loader'
@@ -24,10 +24,10 @@ const Coins = () => {
     setloading(true)
   }
 
-  const btns = new Array(132). fill(1)
+  const btns = new Array(132).fill(1)
 
   useEffect(() => {
-    const fechCoin = async ()=>{
+    const fechCoins = async ()=>{
   try {
       const {data} = await axios.get(`${server}/coins/markets?vs_currency=${currency}&page=${page}`)
       setCoins(data);
@@ -38,16 +38,26 @@ const Coins = () => {
     setloading(false)
   }
    }
-   fechCoin()
+   fechCoins()
   }, [currency, page])
 
   if (Error) return <ExchangeError massage={'Error while faching Coins'} />
     
   
   return (
-   <Container maxW={'container.lg'}>
+   <Container maxW={'container.xl'}>
     {loading? <Loader/> : <>
-    <HStack wrap={'wrap'}>
+
+    <RadioGroup value={currency} onChange={setcurrency}>
+      <HStack spacing={'4'} p={'8'}>
+        <Radio value={'inr'}>INR</Radio>
+        <Radio value={'usd'}>USD</Radio>
+        <Radio value={'eur'}>EUR</Radio>
+      </HStack>
+    </RadioGroup>
+
+
+    <HStack wrap={'wrap'} justifyContent={'space-evenly'}>
       {Coins.map((i)=>(
         <CoinsCard id={i.id} name={i.name} price={i.current_price} image={i.image} symbol={i.symbol} url={i.url} currencySymbol={currencySymbol} key={i.id}/>
         ))}
@@ -55,7 +65,7 @@ const Coins = () => {
     </>}
     <HStack overflowY={'auto'}>
       {btns.map((i, index)=>(
-        <Button bgColor={'blackAlpha.900'} color={'white'} onClick={()=>changepage(index + 1)}>
+        <Button key={index} bgColor={'blackAlpha.900'} color={'white'} onClick={()=>changepage(index + 1)}>
         {index + 1}
       </Button>
       ))}
