@@ -1,0 +1,10 @@
+[bulid]
+
+comand = "npm run bulid"
+publush = "/bulid"
+
+
+[[redirects]]
+   from "*"
+   to = "/index.html"
+   status = 200
