@@ -1,36 +1,90 @@
-import { Box, Container, HStack, Radio, RadioGroup, VStack, Text, Image, Stat, StatLabel, StatNumber, StatHelpText, StatArrow, Badge, Progress } from '@chakra-ui/react'
+import { Box, Container, HStack, Radio, RadioGroup, VStack, Text, Image, Stat, StatLabel, StatNumber, StatHelpText, StatArrow, Badge, Progress, Button } from '@chakra-ui/react'
 import React, { useEffect, useState } from 'react'
 import Loader from './Loader'
 import { useParams } from 'react-router-dom'
 import axios from 'axios'
 import { server } from '..'
 import ExchangeError from './ExchangeError'
+import Chart from './Chart'
 
 
 const CoinsDetails = () => {
+  const params = useParams()
   const [Coin, setCoin] = useState({})
-  const [loading, setloading] = useState(true)
+  const [loading, setLoading] = useState(true)
   const [Error, setError] = useState(false)
   const [currency, setcurrency] = useState('inr')
+  const [days, setDays] = useState("24h");
+  const [chartArray, setChartArray] = useState([]);
 
   const currencySymbol = currency === 'inr' ? ' ₹' : currency === 'eur' ? '€' : ' $'
 
-  const params = useParams()
+
+  const btns = ["24h", "7d", "14d", "30d", "60d", "200d", "1y", "max"];
+
+  const switchChartStats = (key) => {
+    switch (key) {
+      case "24h":
+        setDays("24h");
+        setLoading(true);
+        break;
+      case "7d":
+        setDays("7d");
+        setLoading(true);
+        break;
+      case "14d":
+        setDays("14d");
+        setLoading(true);
+        break;
+      case "30d":
+        setDays("30d");
+        setLoading(true);
+        break;
+      case "60d":
+        setDays("60d");
+        setLoading(true);
+        break;
+      case "200d":
+        setDays("200d");
+        setLoading(true);
+        break;
+      case "1y":
+        setDays("365d");
+        setLoading(true);
+        break;
+      case "max":
+        setDays("max");
+        setLoading(true);
+        break;
+
+      default:
+        setDays("24h");
+        setLoading(true);
+        break;
+    }
+  };
+
+ 
 
   useEffect(() => {
     const fechCoin = async () => {
       try {
         const { data } = await axios.get(`${server}/coins/${params.id}`)
+
+        const { data: chartData } = await axios.get(
+          `${server}/coins/${params.id}/market_chart?vs_currency=${currency}&days=${days}`
+        );
         setCoin(data);
-        setloading(false);
+        setChartArray(chartData.prices);
+        setLoading(false);
         console.log(data);
       } catch (error) {
         setError(true)
-        setloading(false)
+        setLoading(false)
       }
     }
     fechCoin()
-  }, [params.id])
+  }, [params.id,  currency, days])
 
   if (Error) return <ExchangeError massage={'Error while faching Coin'} />
 
@@ -42,8 +96,22 @@ const CoinsDetails = () => {
           <>
 
             <Box w={'full'} borderWidth={'1'}>
+            <Chart arr={chartArray} currency={currencySymbol} days={days} />
+          </Box>
 
-            </Box>
+          <HStack p="4" overflowX={"auto"}>
+            {btns.map((i) => (
+              <Button
+                disabled={days === i}
+                key={i}
+                onClick={() => switchChartStats(i)}
+              >
+                {i}
+              </Button>
+            ))}
+          </HStack>
+
+            
 
             <RadioGroup value={currency} onChange={setcurrency}>
               <HStack spacing={'4'} p={'8'}>
