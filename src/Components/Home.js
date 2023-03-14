@@ -33,7 +33,7 @@ const Home = () => {
       textAlign={"center"}
       fontWeight={"thin"}
       color={"whiteAlpha.700"}
-      mt={"-20"}
+      mt={["-20", "2"]}
     >
       Xcrypto
     </Text>
